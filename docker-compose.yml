@@ -1,0 +1,18 @@
+services:
+  healthrag:
+    build: .
+    image: healthrag:serve
+    container_name: healthrag
+    # 索引常驻约 100MB，留足余量但仍设上限，避免拖垮同机上的其它服务
+    mem_limit: 700m
+    ports:
+      - "8030:8000"          # 宿主机 8030 → 容器 8000，交给 Caddy 反代
+    volumes:
+      # 索引只读挂载。换 INDEX_DIR 就能切到消融用的另一套索引，不用重建镜像
+      - ./indexing/store:/app/indexing/store:ro
+    env_file:
+      - .env                  # 放 API key，不要提交
+    environment:
+      - TZ=Asia/Shanghai
+      - ENABLE_RERANK=1
+    restart: unless-stopped

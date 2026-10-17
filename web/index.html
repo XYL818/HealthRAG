@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知健 · 生活与健康知识问答</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>知健</h1>
+    <p class="sub">生活与健康知识问答 · 答案标注来源，查不到就直说</p>
+    <p class="tech">
+      <span>混合检索 BM25 + 向量</span>
+      <span>RRF 融合</span>
+      <span>bge-reranker 重排</span>
+      <span>引用溯源</span>
+    </p>
+  </div>
+</header>
+
+<div class="disclaimer wrap">
+  本服务基于公开资料整理，仅供科普参考，<strong>不构成医疗建议</strong>。
+  身体不适请及时就医。
+</div>
+
+<main class="wrap">
+
+  <form id="ask-form" class="ask" autocomplete="off">
+    <input id="q" type="text" placeholder="例如：高血压的诊断标准是什么？" maxlength="120">
+    <button id="ask-btn" type="submit">提问</button>
+  </form>
+
+  <div class="examples" id="examples">
+    <span class="label">试试：</span>
+    <button class="chip">高血压的诊断标准是什么？</button>
+    <button class="chip">每天应该喝多少水？</button>
+    <button class="chip">睡眠不足对身体有什么影响？</button>
+    <button class="chip">膳食纤维有什么作用？</button>
+    <button class="chip">怎么预防中暑？</button>
+  </div>
+
+  <section id="answer-card" class="card answer hidden">
+    <div class="card-head">
+      <span class="dot"></span><h2>回答</h2>
+      <span id="timer" class="timer"></span>
+    </div>
+    <div id="answer" class="answer-body"></div>
+    <div id="refused-note" class="refused hidden">
+      检索到的资料相关度不足，已拒答 —— 这是有意设计，避免编造。
+    </div>
+  </section>
+
+  <section id="sources-card" class="card hidden">
+    <div class="card-head">
+      <span class="dot alt"></span><h2>参考来源</h2>
+      <span id="src-count" class="timer"></span>
+    </div>
+    <div id="sources" class="sources"></div>
+  </section>
+
+  <section id="trace-card" class="card hidden">
+    <div class="card-head collapsible" id="trace-toggle">
+      <span class="dot dim"></span><h2>检索过程</h2>
+      <span class="chev">▾</span>
+    </div>
+    <div id="trace" class="trace"></div>
+  </section>
+
+  <div id="error" class="error hidden"></div>
+
+</main>
+
+<footer class="wrap">
+  <div id="stats" class="stats"></div>
+  <p class="foot">
+    语料：中文维基百科生活与健康类目（CC BY-SA）·
+    <a href="/docs">API 文档</a> ·
+    <a href="https://github.com/Null-Phnix/HealthRAG">GitHub</a>
+  </p>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

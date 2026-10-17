@@ -1,0 +1,16 @@
+# 运行期依赖（构建索引 + 起服务都够用）
+# 注意：本项目**不需要 torch**，推理全部走云端 API，镜像可以做到很小。
+
+# 检索
+faiss-cpu>=1.7.4
+numpy>=1.24.0
+jieba>=0.42.1
+rank-bm25>=0.2.2
+
+# 服务
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+jinja2>=3.1.0
+python-multipart>=0.0.9
+aiofiles>=23.2.0
+httpx>=0.27.0

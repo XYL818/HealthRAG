@@ -1,0 +1,32 @@
+# 评测层专用镜像 —— **不是运行镜像**。
+#
+# 为什么单独一个：RAGAS 是 LLM-as-judge，会把 langchain / datasets / pandas
+# 一大堆包拖进来，跟服务运行毫无关系。混进运行镜像只会让它臃肿几十倍。
+#
+# 它同时装了运行依赖，所以检索层的消融（eval/run_eval.py、run_ablation.py）
+# 也在这个镜像里跑，比运行镜像多一个 pytest。
+#
+# 用法：
+#   docker build -f Dockerfile.eval -t healthrag:eval .
+#   docker run --rm --env-file .env -v $PWD:/app healthrag:eval \
+#       python -m eval.run_ragas
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    OMP_NUM_THREADS=2 \
+    TZ=Asia/Shanghai
+
+WORKDIR /app
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends curl \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY requirements-eval.txt requirements.txt requirements-dev.txt ./
+RUN pip install --no-cache-dir -r requirements-eval.txt -r requirements-dev.txt
+
+# 预生成 jieba 词典缓存
+RUN python -c "import jieba; jieba.initialize()"
+
+CMD ["python", "-m", "eval.run_ragas"]

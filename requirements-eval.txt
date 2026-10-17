@@ -1,0 +1,35 @@
+# 评测层专用依赖 —— **不进运行镜像**。
+#
+# 装了它才能跑：python -m eval.run_ragas（生成侧评估）
+# 检索层的消融（python -m eval.run_eval / run_ablation）**不需要**这些，
+# 只依赖 requirements.txt。
+#
+# 为什么这些包又大又重：RAGAS 是 LLM-as-judge，它用 LangChain 的 LLM wrapper
+# 去接模型（所以 langchain 是被 RAGAS 拉进来的，不是我们主动选的框架），
+# 底层还要 datasets / pandas 做数据表。这些跟服务运行毫无关系，
+# 所以单独一个文件，别混进 runtime 镜像。
+-r requirements.txt
+
+ragas>=0.4,<0.5
+
+# ---------------------------------------------------------------------------
+# langchain 全家桶必须钉住，**这不是洁癖，是不钉就装不起来**
+#
+# ragas 0.4.3 在 ragas/llms/base.py 里写死了
+#     from langchain_community.chat_models.vertexai import ChatVertexAI
+# 但它对 langchain-community 没有写任何版本上限。于是 pip 会装上
+# langchain-community 0.4.x —— 那个版本已经把这个模块删了，
+# 结果 `import ragas` 直接 ModuleNotFoundError。
+#
+# 实测能跑通的组合（2026-10-15）：
+#   ragas 0.4.3 / langchain 0.3.30 / langchain-core 0.3.86 /
+#   langchain-community 0.3.31 / langchain-openai 0.3.35
+# ---------------------------------------------------------------------------
+langchain<1.0
+langchain-core<1.0
+langchain-community<0.4
+langchain-openai<1.0
+
+datasets>=4.0
+# pandas 3.0 是 ragas 0.4.3 之后才发布的，别赌它兼容
+pandas<3

@@ -1,0 +1,42 @@
+# 密钥 —— 绝不提交
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# 生成物。索引合计约 98MB（向量 63MB + BM25 词表 18MB + 元数据 16MB），
+# 放进 git 会让仓库臃肿、clone 变慢，用 `python -m indexing.build_index` 重建即可。
+# 通配 chunks*.jsonl 而不是只写 chunks.jsonl：消融实验会生成
+# data/chunks.cs300.jsonl / chunks.cs700.jsonl 等，漏掉的话一次消融就往
+# 仓库里塞几十 MB。
+data/chunks*.jsonl
+indexing/store/
+
+# 查询向量缓存。基线那一份**要**入库（见下方 ! 规则）：有了它，别人
+# clone 下来不用任何 API key 就能重跑出 README 里那张检索表。
+# 消融实验各变体的缓存不入库（各约 1MB，且对应不随仓库分发的索引）。
+eval/qvec-*.json
+!eval/qvec-BAAI_bge-m3.json
+
+# 运行日志
+logs/
+*.log
+
+# 临时文件
+data/_tmp/
+*.bak
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 注意：以下**要**入库，别加进来
+#   data/corpus.jsonl —— 语料本身。CC BY-SA 可再分发，且重爬一次要两小时，
+#                        连同评测集一起入库才能保证检索指标可复现。
